@@ -3,6 +3,17 @@ const GoogleStrategy = require('passport-google-oauth20');
 const User = require('model');
 // create your model and require it
 
+passport.serializeUser((user, done)=>{
+    // the user is the user that we pass as done value
+    done(null, user.id);
+})
+
+passport.deserializeUser((id, done)=>{
+    // id is that ^ user.id
+    User.findById(id).then(user => {
+        done(null, user);
+    });
+})
 
 passport.use(new GoogleStrategy({
     // options for the google strategy
@@ -14,6 +25,7 @@ passport.use(new GoogleStrategy({
 }), (accessToken, refreshToken, profile, done)=> {
     // passport callback function
     // redirect uri
+    // the done sends the selected user to seriliaze methoe
     console.log(profile);
     // create new user to save to db
     // remember to not save one user twice
@@ -21,11 +33,15 @@ passport.use(new GoogleStrategy({
     User.findById(profile.id).then((currentUser)=>{
         if(currentUser){
             console.log('user is', currentUser);
+            done(null, currentUser)
         } else{
             new User({
                 username: profile.displayname,
                 googleid: profile.id
-            }).save().then((newUser)=>{ console.log('new user created', newUser);})
+            }).save().then((newUser)=>{ 
+                console.log('new user created', newUser);
+                done(null, newUser)
+            })
         }
     })
     
