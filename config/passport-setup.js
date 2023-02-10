@@ -37,7 +37,9 @@ passport.use(new GoogleStrategy({
         } else{
             new User({
                 username: profile.displayname,
-                googleid: profile.id
+                googleid: profile.id,
+                // we can retrive the profile pic as well
+                thumbnell: profile._json.image.url
             }).save().then((newUser)=>{ 
                 console.log('new user created', newUser);
                 done(null, newUser)
