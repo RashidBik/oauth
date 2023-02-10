@@ -1,8 +1,12 @@
 const express = require('express');
 const authRouter = require('./routes/authRoutes')
+const mongoose = require('mongoose');
 const app = express();
 
+
 app.set('view engine', 'ejs');
+
+mongoose.connect('mlab') // use mlab for online dbs
 
 app.use('/auth', authRouter);
 
